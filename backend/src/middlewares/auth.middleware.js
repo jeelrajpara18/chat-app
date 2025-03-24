@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
-export const privateRoute = async(req , res ,next) => {
+export const protectRoute = async(req , res ,next) => {
     try {
         const token = req.cookies.jwt
         if(!token){
@@ -23,3 +23,6 @@ export const privateRoute = async(req , res ,next) => {
         return res.status(501).json({message : "Internal Server Error"})
     }
 }
+/* 
+Used for authentication and authorization. Only authorized user will be able access specific routes such as updating profile or checking auth status
+*/

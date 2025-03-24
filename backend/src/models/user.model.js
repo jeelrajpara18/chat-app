@@ -6,6 +6,7 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     },
     fullName: {
       type: String,
@@ -22,6 +23,19 @@ const userSchema = mongoose.Schema(
     },
     phoneNumber: {
       type: Number,
+      default: "",
+    },
+    status: {
+      type: String,
+      enum: ["online", "offline"],
+      default: "offline",
+    },
+    lastSeen: {
+      type: Date,
+      default: Date.now,
+    },
+    bio: {
+      type: String,
       default: "",
     },
   },
