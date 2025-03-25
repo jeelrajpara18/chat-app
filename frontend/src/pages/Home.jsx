@@ -1,9 +1,9 @@
-import React from 'react'
+/* eslint-disable react-refresh/only-export-components */
+import AppLayout from "@/components/layout/AppLayout";
+import React from "react";
 
-function Home() {
-  return (
-    <div>Home</div>
-  )
-}
+const Home = () => {
+  return <div>Home</div>;
+};
 
-export default Home
+export default AppLayout(Home);
