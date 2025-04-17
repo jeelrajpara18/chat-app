@@ -3,9 +3,9 @@ import User from "../models/user.model.js";
 import { generateToken } from "../lib/utils.js";
 import cloudinary from "../lib/cloudinary.js";
 export const signup = async (req, res) => {
-  const { fullName, email, password } = req.body;
+  const { email, password } = req.body;
   try {
-    if (!fullName || !email || !password) {
+    if (!email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
     if (password.length < 6 || password.length > 10) {
@@ -20,7 +20,6 @@ export const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = new User({
-      fullName,
       email,
       password: hashedPassword,
     });
@@ -34,6 +33,7 @@ export const signup = async (req, res) => {
         email: newUser.email,
         profilePic: newUser.profilePic,
         phoneNumber: newUser.phoneNumber,
+        profileSetup : newUser.profileSetup
       });
     } else {
       res.status(400).json({ message: "Invalid user data" });
@@ -61,7 +61,11 @@ export const login = async(req , res)=> {
             _id : user._id,
             fullName : user.fullName,
             profilePic : user.profilePic,
-            phoneNumber : user.phoneNumber
+            phoneNumber : user.phoneNumber,
+            email : user.email,
+            bio : user.bio,
+            color : user.color,
+            profileSetup : user.profileSetup
         })
     } catch (error) {
         console.log("Error in Login controller", error.message);
@@ -81,61 +85,46 @@ export const logout = async(req , res) => {
 
 export const updateProfile = async (req, res) => {
     try {
-        const { profilePic, phoneNumber, status, lastSeen, bio } = req.body;
-        const userId = req.user?._id;
-        
-        // Create update object with only provided fields
-        const updateFields = Object.entries({ phoneNumber, status, lastSeen, bio })
-            .reduce((acc, [key, value]) => {
-                if (value !== undefined) acc[key] = value;
-                return acc;
-            }, {});
-        
-        // Handle profile picture upload if provided
-        if (profilePic) {
-            try {
-                const uploadResponse = await cloudinary.uploader.upload(profilePic, {
-                    folder: "profile_pictures",
-                    resource_type: "image"
-                });
-                updateFields.profilePic = uploadResponse.secure_url;
-            } catch (uploadError) {
-                return res.status(400).json({ 
-                    message: "Failed to upload profile picture", 
-                    error: uploadError.message 
-                });
-            }
+      const { profilePic, phoneNumber, bio, fullName, color } = req.body;
+      const userId = req.user._id;
+  
+      // Basic validation
+      if (!fullName) {
+        return res.status(400).json({ message: "Full name is required" });
+      }
+  
+      const updateData = {
+        $set: {
+          phoneNumber: phoneNumber || undefined, // Set to undefined to remove if empty
+          bio: bio || undefined,
+          fullName,
+          color: color || 0, // Default color if not provided
+          profileSetup: true
         }
-        
-        // Return error if no fields to update
-        if (Object.keys(updateFields).length === 0) {
-            return res.status(400).json({ message: "At least one valid field is required for update" });
-        }
-        
-        // Update user profile
-        const updatedUser = await User.findByIdAndUpdate(
-            userId,
-            updateFields,
-            { new: true, runValidators: true }
-        );
-        
-        if (!updatedUser) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        
-        res.status(200).json({ 
-            message: "Profile updated successfully", 
-            user: updatedUser 
-        });
+      };
+  
+      // Handle profilePic upload if provided
+      if (profilePic) {
+        const uploadResponse = await cloudinary.uploader.upload(profilePic);
+        updateData.$set.profilePic = uploadResponse.secure_url;
+      }
+  
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        updateData,
+        { new: true, runValidators: true } // Return updated doc and run schema validators
+      );
+  
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      res.status(200).json(updatedUser);
     } catch (error) {
-        console.error("Error in updateProfile controller:", error);
-        res.status(500).json({ 
-            message: "Internal server error", 
-            error: error.message 
-        });
+      console.error("Error in update profile:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-};
-
+  };
 export const checkAuth = (req , res) => {
     try {
         res.status(200).json(req.user)

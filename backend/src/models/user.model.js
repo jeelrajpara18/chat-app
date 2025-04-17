@@ -1,3 +1,4 @@
+import { getSalt } from "bcryptjs";
 import mongoose from "mongoose";
 
 const userSchema = mongoose.Schema(
@@ -10,7 +11,7 @@ const userSchema = mongoose.Schema(
     },
     fullName: {
       type: String,
-      required: true,
+      required: false,
     },
     password: {
       type: String,
@@ -38,9 +39,18 @@ const userSchema = mongoose.Schema(
       type: String,
       default: "",
     },
+    profileSetup : {
+      type : Boolean,
+      default : false
+    },
+    color : {
+      type : Number,
+      default : false
+    }
   },
   { timestamps: true }
 );
+
 
 const User = mongoose.model("User" , userSchema);
 export default User
