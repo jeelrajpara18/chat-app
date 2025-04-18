@@ -111,9 +111,7 @@ function Profile() {
                       selectedColor
                     )}`}
                   >
-                    {fullName
-                      ? fullName.split("").shift()
-                      : userInfo.email.split("").shift()}
+                                       {fullName ? fullName.split("").shift() : userInfo.email.split("").shift()}
                   </div>
                 )}
               </Avatar>
