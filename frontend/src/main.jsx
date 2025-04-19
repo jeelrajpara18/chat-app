@@ -4,12 +4,15 @@ import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
+import { SocketProvider } from "./context/socketContext";
 
 createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <StrictMode>
-      <App />
-      <Toaster closeButton/>
-    </StrictMode>
-  </BrowserRouter>
+  <StrictMode>
+    <BrowserRouter>
+      <SocketProvider>
+        <App />
+        <Toaster closeButton />
+      </SocketProvider>
+    </BrowserRouter>
+  </StrictMode>
 );

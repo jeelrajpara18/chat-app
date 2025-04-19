@@ -1,35 +1,30 @@
-let io;
-import { Server } from "socket.io";
-const userSocketMap = {};
+import { Server as SockeIOServer } from "socket.io";
 
 export const initializeSocket = (server) => {
-  io = new Server(server, { cors: { origin: process.env.FRONTEND_URL } });
-
-  io.on("connection", (socket) => {
-    console.log("User connected:", socket.id);
-
-    // Track online users
-    socket.on("setup", (userId) => {
-      userSocketMap[userId] = socket.id;
-      socket.join(userId); // Join personal room
-      io.emit("getOnlineUsers", Object.keys(userSocketMap));
-    });
-
-    // Group room management
-    socket.on("joinGroup", (groupId) => socket.join(groupId));
-    socket.on("leaveGroup", (groupId) => socket.leave(groupId));
-
-    socket.on("disconnect", () => {
-      const userId = Object.keys(userSocketMap).find(
-        (key) => userSocketMap[key] === socket.id
-      );
-      if (userId) {
-        delete userSocketMap[userId];
-        io.emit("getOnlineUsers", Object.keys(userSocketMap));
-      }
-    });
+  const io = new SockeIOServer(server, {
+    cors: { origin: process.env.FRONTEND_URL , methods : ["GET" , "POST"] , credentials : true}
   });
-};
+  const userSocketMap = new Map();
 
-export const getIO = () => io;
-export const getReceiverSocketId = (userId) => userSocketMap[userId];
+  const disconnect = (socket) => {
+    console.log(`Client Disconnected : ${socket.id}`);
+    for(const [userId , socketId] of userSocketMap.entries()){
+      if(socketId === socket.id){
+        userSocketMap.delete(userId);
+        break;
+      }
+    }
+  }
+
+  io.on("connection" , (socket) => {
+    const userId = socket.handshake.query.userId;
+    if(userId){
+      userSocketMap.set(userId , socket.id);
+      console.log(`User connected: ${userId} with socket ID : ${socket.id}`)
+    }
+    else{
+      console.log("User ID not provided during connection")
+    }
+    socket.on("disconnect" , ()=>disconnect(socket))
+  })
+};
