@@ -9,16 +9,27 @@ const messageSchema = new mongoose.Schema(
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
     },
-    text: {
+    messageType: {
       type: String,
+      enum : ["text" , "file"],
+      required : true
     },
-    image: {
-      type: String,
+    content : {
+      type : String,
+      required : function (){
+        return this.messageType == "text"
+      },
+    },
+    fileUrl : {
+      type : String,
+      required : function (){
+        return this.messageType == "file"
+      },
     },
   },
-  { timestamps: true }
+  { timestamps: true} 
 );
 const Message = mongoose.model("Message", messageSchema);
 

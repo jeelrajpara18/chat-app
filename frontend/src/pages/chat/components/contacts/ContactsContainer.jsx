@@ -1,8 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ProfileInfo from "./components/profile-info/ProfileInfo";
 import NewDm from "./components/new-dm/NewDm";
+import { axiosInstance } from "../../../../lib/axios";
+import { GET_DM_LIST } from "../../../../utils/constants";
+import { useAppStore } from "../../../../store/index";
+import ContactList from "../../../../components/ui/contactList";
 
 const ContactsContainer = () => {
+  const {directMessageContacts , setDirectMessageContacts} = useAppStore()
+  useEffect(() => {
+    const getContacts = async () => {
+      const response = await axiosInstance.get(GET_DM_LIST , {withCredentials : true})
+      if(response.data.contacts){
+        console.log(response.data.contacts)
+        setDirectMessageContacts(response.data.contacts)
+      }
+    }
+    getContacts();
+  },[])
   return (
     <div className="relative text-white lg:w-[30vw] xl:[20vw] bg-[#1b1c24] border-r-2 border-[#2f303b] w-full">
       <div className="pt-3">
@@ -12,6 +27,9 @@ const ContactsContainer = () => {
         <div className="flex items-center justify-between pr-10">
           <Title text="Direct Messages"/>
           <NewDm/>
+        </div>
+        <div className="max-h-[39vh] overflow-y-auto scrollbar-hidden">
+          <ContactList contacts={directMessageContacts}/>
         </div>
       </div>
       <div className="my-5">

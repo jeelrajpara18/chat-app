@@ -16,7 +16,7 @@ import {
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { axiosInstance } from "../../../../../../lib/axios";
-import { SEARCH_CONTACTS } from "../../../../../../utils/constants";
+import { HOST, SEARCH_CONTACTS } from "../../../../../../utils/constants";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { getColor } from "../../../../../../lib/utils";
@@ -84,7 +84,7 @@ const NewDm = () => {
                   <Avatar className="h-12 w-12 rounded-full overflow-hidden">
                     {contact.profilePic ? (
                       <AvatarImage
-                        src={`${contact.profilePic}`}
+                        src={`${HOST}/${contact.profilePic}`}
                         alt="profile"
                         className="object-cover w-full h-full bg-black"
                       />

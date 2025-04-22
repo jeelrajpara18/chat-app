@@ -2,6 +2,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useAppStore } from "../../../../../../store/index";
 import { X } from "lucide-react";
 import { getColor } from "../../../../../../lib/utils";
+import { HOST } from "../../../../../../utils/constants";
 
 const ChatHeader = () => {
   const { closeChat, selectedChatData, selectedChatType } = useAppStore();
@@ -12,7 +13,7 @@ const ChatHeader = () => {
           <Avatar className="h-12 w-12 rounded-full overflow-hidden">
             {selectedChatData.profilePic ? (
               <AvatarImage
-                src={`${selectedChatData.profilePic}`}
+                src={`${HOST}/${selectedChatData.profilePic}`}
                 alt="profile"
                 className="object-cover w-full h-full bg-black"
               />

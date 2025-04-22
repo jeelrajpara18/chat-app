@@ -21,13 +21,23 @@ export const SocketProvider = ({ children }) => {
       socket.current.on("connect", () => {
         console.log("Connected to socket server");
       });
-    }
-
-    return () => {
-      if (socket.current) {
+      const handleReceiveMessage = (message) => {
+        const { selectedChatType, selectedChatData, addMessage } =
+          useAppStore.getState();
+        if (
+          (selectedChatType !== undefined &&
+            selectedChatData._id === message.senderId._id) ||
+          selectedChatData._id === message.receiverId._id
+        ) {
+          console.log("Message received ", message);
+          addMessage(message);
+        }
+      };
+      socket.current.on("receiveMessage", handleReceiveMessage);
+      return () => {
         socket.current.disconnect();
-      }
-    };
+      };
+    }
   }, [userInfo]);
 
   return (

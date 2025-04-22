@@ -11,12 +11,13 @@ import {
 import { Edit, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { axiosInstance } from "../../../../../../lib/axios";
-import { LOGOUT_ROUTES } from "../../../../../../utils/constants";
+import { HOST, LOGOUT_ROUTES } from "../../../../../../utils/constants";
 import { toast } from "sonner";
 
 const ProfileInfo = () => {
   const { userInfo , setUserInfo} = useAppStore();
   const navigate = useNavigate();
+  console.log(userInfo.profilePic)
 
   const handleLogOut = async () => {
     try {
@@ -39,7 +40,7 @@ const ProfileInfo = () => {
           <Avatar className="h-12 w-12 rounded-full overflow-hidden">
             {userInfo.profilePic ? (
               <AvatarImage
-                src={`${userInfo.profilePic}`}
+                src={`${HOST}/${userInfo.profilePic}`}
                 alt="profile"
                 className="object-cover w-full h-full bg-black"
               />

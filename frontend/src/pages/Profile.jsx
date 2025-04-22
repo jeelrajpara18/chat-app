@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Delete, Plus } from "lucide-react";
 import { useAppStore } from "../store/index";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { colors, getColor } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { axiosInstance } from "../lib/axios";
-import { UPDATE_USER_PROFILE } from "../utils/constants";
+import { ADD_PROFILE_IMAGE, DELETE_PROFILE_IMAGE, HOST, UPDATE_USER_PROFILE } from "../utils/constants";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -20,6 +20,7 @@ function Profile() {
   const [image, setImage] = useState(null);
   const [hovered, setHovered] = useState(false);
   const [selectedColor, setSelectedColor] = useState(0);
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,25 +29,40 @@ function Profile() {
       setBio(userInfo.bio || "");
       setPhoneNumber(userInfo.phoneNumber || "");
       setSelectedColor(userInfo.color !== undefined ? userInfo.color : 0);
-      setImage(userInfo.profilePic);
+      if(userInfo.profilePic){
+        setImage(`${HOST}/${userInfo.profilePic}`);
+
+      }
     }
   }, [userInfo]);
 
   const handleImageUpload = async (e) => {
     e.preventDefault();
     const file = e.target.files[0];
+    console.log({ file });
+    if (file) {
+      const formData = new FormData();
+      formData.append("profilePic", file);
+      const response = await axiosInstance.post(ADD_PROFILE_IMAGE, formData, {
+        withCredentials: true,
+      });
+      if (response.status === 200 && response.data.profilePic) {
+        setUserInfo({ ...userInfo, profilePic: response.data.profilePic });
+        toast.success("Image uploaded successfully");
+      }
+    }
     if (!file) return;
 
     const reader = new FileReader();
 
-    reader.readAsDataURL(file);
-
     reader.onload = async () => {
-      const base64Image = reader.result;
-      setImage(base64Image);
+      setImage(reader.result);
     };
+    reader.readAsDataURL(file);
   };
-
+  const handleFileInputClick = () => {
+    fileInputRef.current.click();
+  };
   const saveChanges = async () => {
     try {
       const response = await axiosInstance.put(
@@ -73,8 +89,17 @@ function Profile() {
       toast.error("Failed to update profile");
     }
   };
-  const handleDeleteImage = () => {
-    setImage(null);
+  const handleDeleteImage = async () => {
+    try {
+      const res = await axiosInstance.delete(DELETE_PROFILE_IMAGE , {withCredentials : true})
+      if(res.status===200){
+        setUserInfo({...userInfo , profilePic : null});
+        toast.success("Image removed successfully")
+        setImage(null);
+      }
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   return (
@@ -111,7 +136,9 @@ function Profile() {
                       selectedColor
                     )}`}
                   >
-                                       {fullName ? fullName.split("").shift() : userInfo.email.split("").shift()}
+                    {fullName
+                      ? fullName.split("").shift()
+                      : userInfo.email.split("").shift()}
                   </div>
                 )}
               </Avatar>
@@ -120,7 +147,7 @@ function Profile() {
                 (image ? (
                   <div
                     className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full cursor-pointer"
-                    onClick={handleDeleteImage}
+                    onClick={image ? handleDeleteImage : handleFileInputClick}
                   >
                     <Delete className="text-white text-3xl" />
                   </div>
@@ -135,9 +162,11 @@ function Profile() {
 
               <input
                 type="file"
+                // ref={fileInputRef}
                 id="avatar-upload"
                 className="hidden"
-                accept="image/*"
+                name="profilePic"
+                accept=".png, .jgp ,.jpeg ,.svg, .webp"
                 onChange={handleImageUpload}
               />
             </div>
