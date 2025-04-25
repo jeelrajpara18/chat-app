@@ -1,5 +1,6 @@
 import cloudinary from "../lib/cloudinary.js";
 import Message from "../models/message.model.js";
+import { existsSync, mkdirSync , renameSync, unlinkSync} from 'fs';
 
 export const getUsersForSidebar = async (req, res) => {
   try {
@@ -111,6 +112,24 @@ export const updateMessage = async (req, res) => {
     );
 
     res.status(200).json(updatedMessage);
+  } catch (error) {
+    console.log("Error in updateMessage controller: ", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const uploadFile = async (req, res) => {
+  try {
+    if(!req.file){
+      return res.status(400).json({message : "File is required"})
+    }
+    const date = Date.now();
+    let fileDir = `uploads/files/${date}`
+    let fileName = `${fileDir}/${req.file.originalname}`
+
+    mkdirSync(fileDir , {recursive : true})
+    renameSync(req.file.path , fileName)
+    res.status(200).json({filePath : fileName});
   } catch (error) {
     console.log("Error in updateMessage controller: ", error.message);
     res.status(500).json({ error: "Internal server error" });

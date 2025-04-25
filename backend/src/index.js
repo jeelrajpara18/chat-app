@@ -27,6 +27,7 @@ app.use(cors({
 
 // Serve uploaded images statically (correct path)
 app.use("/uploads/profilePic", express.static("uploads/profilePic"));
+app.use("/uploads/files", express.static("uploads/files"));
 
 // Routes
 app.use("/api/auth", authRoutes);

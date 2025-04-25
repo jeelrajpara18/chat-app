@@ -22,7 +22,9 @@ export const searchContacts = async (req, res) => {
       ],
     });
     return res.status(200).json({ contacts });
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 export const getContactsForDmList = async (req, res) => {
@@ -79,5 +81,23 @@ export const getContactsForDmList = async (req, res) => {
       },
     ]);
     return res.status(200).json({ contacts });
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getAllContacts = async (req, res) => {
+  try {
+    const user = await User.find({_id : {
+      $ne : req.user._id
+    }} , "fullName _id email")
+
+    const contacts = user.map((user) => ({
+      label : user.fullName ? `${user.fullName}` : `${user.email}`,
+      value : user._id
+    }))
+    return res.status(200).json({ contacts });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
 };

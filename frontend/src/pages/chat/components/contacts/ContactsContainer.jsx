@@ -5,6 +5,7 @@ import { axiosInstance } from "../../../../lib/axios";
 import { GET_DM_LIST } from "../../../../utils/constants";
 import { useAppStore } from "../../../../store/index";
 import ContactList from "../../../../components/ui/contactList";
+import CreateChannel from "./components/create-channel/CreateChannel";
 
 const ContactsContainer = () => {
   const {directMessageContacts , setDirectMessageContacts} = useAppStore()
@@ -35,6 +36,7 @@ const ContactsContainer = () => {
       <div className="my-5">
         <div className="flex items-center justify-between pr-10">
           <Title text="Channels"/>
+          <CreateChannel/>
         </div>
       </div>
       <ProfileInfo/>

@@ -21,19 +21,26 @@ export const SocketProvider = ({ children }) => {
       socket.current.on("connect", () => {
         console.log("Connected to socket server");
       });
-      const handleReceiveMessage = (message) => {
+      
+      const handleMessage = (message) => {
         const { selectedChatType, selectedChatData, addMessage } =
           useAppStore.getState();
+        
+        // Check if the current chat is related to this message
         if (
-          (selectedChatType !== undefined &&
-            selectedChatData._id === message.senderId._id) ||
-          selectedChatData._id === message.receiverId._id
+          selectedChatType !== undefined &&
+          (selectedChatData._id === message.senderId._id ||
+           selectedChatData._id === message.receiverId._id)
         ) {
-          console.log("Message received ", message);
+          console.log("Message handled:", message);
           addMessage(message);
         }
       };
-      socket.current.on("receiveMessage", handleReceiveMessage);
+      
+      // Listen for both message events with the same handler
+      socket.current.on("receiveMessage", handleMessage);
+      socket.current.on("sendMessage", handleMessage);
+      
       return () => {
         socket.current.disconnect();
       };

@@ -1,13 +1,22 @@
+import { axiosInstance } from "../../../../../../lib/axios";
 import { useSocket } from "../../../../../../context/socketContext";
 import { useAppStore } from "../../../../../../store/index";
 import EmojiPicker from "emoji-picker-react";
 import { Paperclip, SendHorizonal, SmilePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { UPLOAD_FILES } from "../../../../../../utils/constants";
 
 const MessageBar = () => {
   const [message, setMessage] = useState("");
   const emojiRef = useRef();
-  const { selectedChatType, selectedChatData, userInfo } = useAppStore();
+  const fileInputRef = useRef();
+  const {
+    selectedChatType,
+    selectedChatData,
+    userInfo,
+    setIsUploading,
+    setFileUploadedProgress,
+  } = useAppStore();
   const socket = useSocket();
 
   useEffect(() => {
@@ -21,6 +30,7 @@ const MessageBar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [emojiRef]);
+
   const [emojiPickerOpen, setEmojiPicOpen] = useState(false);
   const handleSendMessage = async () => {
     if (selectedChatType === "contact") {
@@ -31,11 +41,51 @@ const MessageBar = () => {
         messageType: "text",
         fileUrl: undefined,
       });
-      setMessage("")
+      setMessage("");
     }
   };
   const handleAddEmoji = (emoji) => {
     setMessage((msg) => msg + emoji.emoji);
+  };
+
+  const handleAttachmentClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  const handleAttachmentChange = async (event) => {
+    try {
+      const file = event.target.files[0];
+      console.log({ file });
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        setIsUploading(true);
+        const response = await axiosInstance.post(UPLOAD_FILES, formData, {
+          withCredentials: true,
+          onDownloadProgress: (data) => {
+            setFileUploadedProgress(
+              Math.round((100 * data.loaded) / data.total)
+            );
+          },
+        });
+        if (response.status === 200 && response.data) {
+          setIsUploading(false);
+          if (selectedChatType == "contact") {
+            socket.emit("sendMessage", {
+              senderId: userInfo._id,
+              content: "",
+              receiverId: selectedChatData._id,
+              messageType: "file",
+              fileUrl: response.data.filePath,
+            });
+          }
+        }
+      }
+    } catch (error) {
+      setIsUploading(false);
+      console.log(error);
+    }
   };
   return (
     <div className="h-[10vh] bg-[#1c1d25] flex justify-center items-center px-8 mb-6 gap-6">
@@ -47,9 +97,18 @@ const MessageBar = () => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
-        <button className="text-neutral-500 hover:text-white focus:outline-none focus:ring-0 duration-300 transition-all cursor-pointer">
+        <button
+          className="text-neutral-500 hover:text-white focus:outline-none focus:ring-0 duration-300 transition-all cursor-pointer"
+          onClick={handleAttachmentClick}
+        >
           <Paperclip className="text-2xl" />
         </button>
+        <input
+          type="file"
+          className="hidden"
+          ref={fileInputRef}
+          onChange={handleAttachmentChange}
+        />
         <div className="relative">
           <button
             className="text-neutral-500 hover:text-white focus:outline-none focus:ring-0 duration-300 transition-all cursor-pointer"
