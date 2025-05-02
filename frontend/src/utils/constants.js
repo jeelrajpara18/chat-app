@@ -17,3 +17,7 @@ export const GET_ALL_CONTACT = `${CONTACT_ROUTES}/get-all-contacts`
 export const MESSAGE_ROUTES = "api/messages";
 export const GET_ALL_MESSAGE = `${MESSAGE_ROUTES}/get-messages`
 export const UPLOAD_FILES = `${MESSAGE_ROUTES}/upload-file`
+
+export const GROUP_ROUTES = "api/groups";
+export const CREATE_GROUP = `${GROUP_ROUTES}/create-group`;
+export const GET_GROUP = `${GROUP_ROUTES}/get-group-users`

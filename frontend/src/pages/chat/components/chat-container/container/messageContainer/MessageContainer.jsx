@@ -14,7 +14,7 @@ const MessageContainer = () => {
     selectedChatMessages,
     setSelectedChatMessages,
     setFileDownloadedProgress,
-    setIsDownloading
+    setIsDownloading,
   } = useAppStore();
   const [showImage, setshowImage] = useState(false);
   const [imageUrl, setimageUrl] = useState(null);
@@ -28,15 +28,17 @@ const MessageContainer = () => {
           { withCredentials: true }
         );
         if (response.data.messages) {
+          console.log("Got messages:", response.data.messages);
           setSelectedChatMessages(response.data.messages);
         }
-      } catch (error) {}
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
     };
     if (selectedChatData._id) {
-      if (selectedChatType === "contact") getMessages();
+      getMessages(); // Fetch messages for both contact and group
     }
   }, [selectedChatData, selectedChatType, setSelectedChatMessages]);
-  
 
   useEffect(() => {
     console.log("selectedChatMessages:", selectedChatMessages);
@@ -53,14 +55,14 @@ const MessageContainer = () => {
 
   const downloadFile = async (url) => {
     setIsDownloading(true);
-    setFileDownloadedProgress(0)
+    setFileDownloadedProgress(0);
     const response = await axiosInstance.get(`${HOST}/${url}`, {
       responseType: "blob",
-      onDownloadProgress : (progressEvent) => {
-        const {loaded , total} = progressEvent;
-        const percentCompleted = Math.round((loaded * 100));
-        setFileDownloadedProgress(percentCompleted)
-      }
+      onDownloadProgress: (progressEvent) => {
+        const { loaded, total } = progressEvent;
+        const percentCompleted = Math.round(loaded * 100);
+        setFileDownloadedProgress(percentCompleted);
+      },
     });
     const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
@@ -71,9 +73,10 @@ const MessageContainer = () => {
     link.remove();
     window.URL.revokeObjectURL(urlBlob);
     setIsDownloading(false);
-    setFileDownloadedProgress(0)
+    setFileDownloadedProgress(0);
   };
   const renderMessage = () => {
+ 
     let lastDate = null;
     return selectedChatMessages.map((message) => {
       const messageDate = moment(message.createdAt).format("YYYY-MM-DD");
@@ -87,6 +90,7 @@ const MessageContainer = () => {
             </div>
           )}
           {selectedChatType === "contact" && renderDMMessage(message)}
+          {selectedChatType === "group" && renderGroupMessage(message)}
         </div>
       );
     });
@@ -149,6 +153,47 @@ const MessageContainer = () => {
       <div className="">{moment(message.createdAt).format("LT")}</div>
     </div>
   );
+
+  // const renderGroupMessage = (message) => {
+  //   // Handle both object and string senderId
+  //   const senderId = typeof message.senderId === 'object' 
+  //     ? message.senderId._id 
+  //     : message.senderId;
+    
+  //   const isCurrentUser = senderId === userInfo._id;
+  //   const senderName = typeof message.senderId === 'object'
+  //     ? message.senderId.fullName
+  //     : 'Unknown';
+  
+  //   return (
+  //     <div className={`mt-2 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
+  //       {!isCurrentUser && (
+  //         <div className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+  //           {senderName}
+  //         </div>
+  //       )}
+        
+  //       <div
+  //         className={`inline-block p-3 rounded-lg my-1 max-w-[70%] break-words ${
+  //           isCurrentUser
+  //             ? 'bg-blue-100 text-blue-900'
+  //             : 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-white'
+  //         }`}
+  //       >
+  //         {message.messageType === 'text' ? (
+  //           message.content
+  //         ) : (
+  //           renderFileMessage(message)
+  //         )}
+  //       </div>
+        
+  //       <div className="text-xs text-gray-500 dark:text-gray-400">
+  //         {moment(message.createdAt).format('h:mm A')}
+  //       </div>
+  //     </div>
+  //   );
+  // };
+
   return (
     <div className="flex-1 overflow-y-auto scrollbar-hidden p-4 px-8 md:w-[65vw] lg-w[70vw] xl:w-[80vw] w-full">
       {renderMessage()}
@@ -165,11 +210,14 @@ const MessageContainer = () => {
             <button className="bg-black/20 p-3 text-2xl rounded-full hover:bg-black/50 cursor-pointer transition-all">
               <Download onClick={() => downloadFile(imageUrl)} />
             </button>
-            <button className="bg-black/20 p-3 text-2xl rounded-full hover:bg-black/50 cursor-pointer transition-all" onClick={() => {
-                  setshowImage(false);
-                  setimageUrl(null);
-                }}>
-              <X/>
+            <button
+              className="bg-black/20 p-3 text-2xl rounded-full hover:bg-black/50 cursor-pointer transition-all"
+              onClick={() => {
+                setshowImage(false);
+                setimageUrl(null);
+              }}
+            >
+              <X />
             </button>
           </div>
         </div>

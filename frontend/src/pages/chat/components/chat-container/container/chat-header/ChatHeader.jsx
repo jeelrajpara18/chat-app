@@ -6,30 +6,38 @@ import { HOST } from "../../../../../../utils/constants";
 
 const ChatHeader = () => {
   const { closeChat, selectedChatData, selectedChatType } = useAppStore();
+  // console.log(selectedChatData , "dattaa")
   return (
     <div className="h-[10vh] text-white border-b-2 border-[#2f303b] flex items-center justify-between px-20">
       <div className="flex gap-5 items-center justify-between w-full">
         <div className="flex gap-3 items-center justify-center">
-          <Avatar className="h-12 w-12 rounded-full overflow-hidden">
-            {selectedChatData.profilePic ? (
-              <AvatarImage
-                src={`${HOST}/${selectedChatData.profilePic}`}
-                alt="profile"
-                className="object-cover w-full h-full bg-black"
-              />
-            ) : (
-              <div
-                className={`uppercase text-lg flex items-center justify-center h-12 w-12 ${getColor(
-                  selectedChatData.color
-                )}`}
-              >
-                {selectedChatData.fullName
-                  ? selectedChatData.fullName.split("").shift()
-                  : selectedChatData.email.split("").shift()}
-              </div>
-            )}
-          </Avatar>
-          <div>
+          {selectedChatType == "contact" ? (
+            <Avatar className="h-12 w-12 rounded-full overflow-hidden">
+              {selectedChatData.profilePic ? (
+                <AvatarImage
+                  src={`${HOST}/${selectedChatData.profilePic}`}
+                  alt="profile"
+                  className="object-cover w-full h-full bg-black"
+                />
+              ) : (
+                <div
+                  className={`uppercase text-lg flex items-center justify-center h-12 w-12 ${getColor(
+                    selectedChatData.color
+                  )}`}
+                >
+                  {selectedChatData.fullName
+                    ? selectedChatData.fullName.split("").shift()
+                    : selectedChatData.email.split("").shift()}
+                </div>
+              )}
+            </Avatar>
+          ) : (
+            <div className="bg-[#ffffff22] h-10 w-10 flex items-center rounded-full justify-center text-white">
+              #
+            </div>
+          )}
+          <div className="text-white">
+            {selectedChatType == "group" && selectedChatData.name}
             {selectedChatType == "contact" && selectedChatData.fullName
               ? selectedChatData.fullName
               : selectedChatData.email}

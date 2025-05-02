@@ -14,7 +14,7 @@ function ContactList({ contacts, isChannel = false }) {
   } = useAppStore();
   const handleClick = (contact) => {
     if (isChannel) {
-      setSelectedChatType("channel");
+      setSelectedChatType("group");
     } else {
       setSelectedChatType("contact");
     }
@@ -25,8 +25,8 @@ function ContactList({ contacts, isChannel = false }) {
   };
   console.log(contacts)
   return (
-    <div className="mt-5">
-      {contacts.map((contact) =>(
+    <div className="mt-5 text-black">
+      {contacts?.filter((contact) => contact && contact._id).map((contact) =>(
         <div
           key={contact._id}
           className={`pl-10 py-2 transition-all duration-300 cursor-pointer ${
@@ -63,7 +63,7 @@ function ContactList({ contacts, isChannel = false }) {
               </Avatar>
             )}
             {isChannel && (
-              <div className="bg-[#ffffff22] h-10 w-10 flex items-center rounded-full justify-center">
+              <div className="bg-[#ffffff22] h-10 w-10 flex items-center rounded-full justify-center">#
               </div>
             )}
             {isChannel ? (

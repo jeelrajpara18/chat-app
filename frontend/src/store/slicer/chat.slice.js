@@ -3,14 +3,18 @@ export const createChatSlice = (set, get) => ({
   selectedChatData: undefined,
   selectedChatMessages: [],
   directMessageContacts: [],
-  isUploading : false,
-  isDownloading : false , 
-  fileUploadedProgress : 0,
-  fileDownloadProgress : 0,
-  setIsUploading : (isUploading) => set({isUploading}),
-  setIsDownloading : (isDownloading) => set({isDownloading}),
-  setFileUploadedProgress : (fileUploadedProgress) => set({fileUploadedProgress}),
-  setFileDownloadedProgress : (fileDownloadProgress) => set({fileDownloadProgress}),
+  isUploading: false,
+  isDownloading: false,
+  fileUploadedProgress: 0,
+  fileDownloadProgress: 0,
+  groups: [],
+  setGroups: (groups) => set({ groups }),
+  setIsUploading: (isUploading) => set({ isUploading }),
+  setIsDownloading: (isDownloading) => set({ isDownloading }),
+  setFileUploadedProgress: (fileUploadedProgress) =>
+    set({ fileUploadedProgress }),
+  setFileDownloadedProgress: (fileDownloadProgress) =>
+    set({ fileDownloadProgress }),
   setSelectedChatType: (selectedChatType) => set({ selectedChatType }),
   setSelectedChatData: (selectedChatData) => set({ selectedChatData }),
   setSelectedChatMessages: (selectedChatMessages) =>
@@ -23,6 +27,12 @@ export const createChatSlice = (set, get) => ({
       selectedChatType: undefined,
       selectedChatMessages: [],
     }),
+  addGroups: (group) => {
+    const groups = get().groups;
+    set({
+      groups: [group, ...groups],
+    });
+  },
   addMessage: (message) => {
     const selectedChatMessages = get().selectedChatMessages;
     const selectedChatType = get().selectedChatType;
@@ -33,11 +43,11 @@ export const createChatSlice = (set, get) => ({
         {
           ...message,
           receiverId:
-            selectedChatType === "channel"
+            selectedChatType === "group"
               ? message.receiverId
               : message.receiverId._id,
           senderId:
-            selectedChatType === "channel"
+            selectedChatType === "group"
               ? message.senderId
               : message.senderId._id,
         },

@@ -21,26 +21,45 @@ export const SocketProvider = ({ children }) => {
       socket.current.on("connect", () => {
         console.log("Connected to socket server");
       });
-      
+
       const handleMessage = (message) => {
         const { selectedChatType, selectedChatData, addMessage } =
           useAppStore.getState();
-        
+
         // Check if the current chat is related to this message
         if (
           selectedChatType !== undefined &&
           (selectedChatData._id === message.senderId._id ||
-           selectedChatData._id === message.receiverId._id)
+            selectedChatData._id === message.receiverId._id)
         ) {
           console.log("Message handled:", message);
           addMessage(message);
         }
       };
+
+      const handleReceiveGroupMessage = (message) => {
+        console.log("Received group message:", message);
+        
+        const { selectedChatType, selectedChatData, addMessage } = useAppStore.getState();
+        
+        // Normalize message structure
+        const normalizedMessage = {
+          ...message,
+          // Ensure consistent field names with direct messages
+          _id: message._id,
+          createdAt: message.createdAt || message.timestamp,
+          senderId: message.senderId, // already populated
+          groupId: message.groupId || message._id // fallback to _id if groupId missing
+        };
       
-      // Listen for both message events with the same handler
-      socket.current.on("receiveMessage", handleMessage);
+        if (selectedChatType === "group" && selectedChatData?._id === normalizedMessage.groupId) {
+          console.log("Adding group message to store:", normalizedMessage);
+          addMessage(normalizedMessage);
+        }
+      };
+
       socket.current.on("sendMessage", handleMessage);
-      
+      socket.current.on("receive-group-message" , handleReceiveGroupMessage)
       return () => {
         socket.current.disconnect();
       };

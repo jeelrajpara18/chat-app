@@ -32,18 +32,28 @@ const MessageBar = () => {
   }, [emojiRef]);
 
   const [emojiPickerOpen, setEmojiPicOpen] = useState(false);
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
+  
     if (selectedChatType === "contact") {
       socket.emit("sendMessage", {
         senderId: userInfo._id,
-        content: message,
         receiverId: selectedChatData._id,
+        content: message,
         messageType: "text",
-        fileUrl: undefined,
+        timestamp: new Date().toISOString(),
       });
-      setMessage("");
+    // } else if (selectedChatType === "group") {
+    //   socket.emit("send-group-message", {
+    //     groupId: selectedChatData._id,
+    //     senderId: userInfo._id,
+    //     content: message,
+    //     messageType: "text",
+    //     timestamp: new Date().toISOString(),
+    //   });
     }
+    setMessage(""); // clear input after sending
   };
+  
   const handleAddEmoji = (emoji) => {
     setMessage((msg) => msg + emoji.emoji);
   };
@@ -80,6 +90,15 @@ const MessageBar = () => {
               fileUrl: response.data.filePath,
             });
           }
+          // else if(selectedChatType === "group"){
+          //   socket.emit("send-group-message" , {
+          //     senderId : userInfo._id,
+          //     content : "",
+          //     messageType : "file",
+          //     fileUrl : response.data.filePath,
+          //     groupId : selectedChatData._id
+          //   })
+          // }
         }
       }
     } catch (error) {

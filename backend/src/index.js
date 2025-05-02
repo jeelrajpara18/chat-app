@@ -1,6 +1,7 @@
 import express from "express";
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
+import groupRoutes from "./routes/groups.routes.js"
 import dotenv from "dotenv";
 import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
@@ -33,6 +34,7 @@ app.use("/uploads/files", express.static("uploads/files"));
 app.use("/api/auth", authRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/groups" , groupRoutes)
 
 // Start server
 const server = app.listen(Port, () => {
