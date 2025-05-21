@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Loader } from "lucide-react";
 import Chat from "./pages/chat/Chat";
 import Login from "./pages/Login";
-import Groups from "./pages/Groups";
 import Profile from "./pages/Profile";
 import { useAppStore } from "./store/index";
 import { axiosInstance } from "./lib/axios";
@@ -59,6 +58,8 @@ function App() {
   }
   return (
     <>
+    <div className="bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-950 dark:to-slate-900 text-neutral-600 dark:text-white">
+
       <Routes>
         <Route path="*" element={<Navigate to="/auth" />} />
         <Route
@@ -77,7 +78,7 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/groups" element={<Groups />} />
+        {/* <Route path="/groups" element={<Groups />} /> */}
         <Route
           path="/profile"
           element={
@@ -87,6 +88,7 @@ function App() {
           }
         />
       </Routes>
+      </div>
     </>
   );
 }

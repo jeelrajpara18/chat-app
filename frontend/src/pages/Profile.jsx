@@ -8,7 +8,12 @@ import { Button } from "@/components/ui/button";
 import { colors, getColor } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { axiosInstance } from "../lib/axios";
-import { ADD_PROFILE_IMAGE, DELETE_PROFILE_IMAGE, HOST, UPDATE_USER_PROFILE } from "../utils/constants";
+import {
+  ADD_PROFILE_IMAGE,
+  DELETE_PROFILE_IMAGE,
+  HOST,
+  UPDATE_USER_PROFILE,
+} from "../utils/constants";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -24,14 +29,13 @@ function Profile() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (userInfo.profileSetup) {
-      setFullName(userInfo.fullName || "");
-      setBio(userInfo.bio || "");
-      setPhoneNumber(userInfo.phoneNumber || "");
-      setSelectedColor(userInfo.color !== undefined ? userInfo.color : 0);
-      if(userInfo.profilePic){
+    if (userInfo?.profileSetup) {
+      setFullName(userInfo?.fullName || "");
+      setBio(userInfo?.bio || "");
+      setPhoneNumber(userInfo?.phoneNumber || "");
+      setSelectedColor(userInfo?.color !== undefined ? userInfo.color : 0);
+      if (userInfo?.profilePic) {
         setImage(`${HOST}/${userInfo.profilePic}`);
-
       }
     }
   }, [userInfo]);
@@ -75,7 +79,7 @@ function Profile() {
           color: selectedColor,
         },
         {
-          withCredentials: true, // 👈 VERY IMPORTANT for cookies
+          withCredentials: true,
         }
       );
 
@@ -91,14 +95,16 @@ function Profile() {
   };
   const handleDeleteImage = async () => {
     try {
-      const res = await axiosInstance.delete(DELETE_PROFILE_IMAGE , {withCredentials : true})
-      if(res.status===200){
-        setUserInfo({...userInfo , profilePic : null});
-        toast.success("Image removed successfully")
+      const res = await axiosInstance.delete(DELETE_PROFILE_IMAGE, {
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        setUserInfo({ ...userInfo, profilePic: null });
+        toast.success("Image removed successfully");
         setImage(null);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 

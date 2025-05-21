@@ -68,7 +68,7 @@ const createGroup = () => {
     <div>
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger onClick={() => setOpenNewContactMenu(true)}>
+          <TooltipTrigger onClick={() => setOpenNewContactMenu(true)} asChild>
             <Plus className="text-neutral-400 font-light text-start hover:text-neutral-100 transition-all cursor-pointer duration-300" />
           </TooltipTrigger>
           <TooltipContent>

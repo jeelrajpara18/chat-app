@@ -8,7 +8,7 @@ const ChatHeader = () => {
   const { closeChat, selectedChatData, selectedChatType } = useAppStore();
   // console.log(selectedChatData , "dattaa")
   return (
-    <div className="h-[10vh] text-white border-b-2 border-[#2f303b] flex items-center justify-between px-20">
+  <div className="h-[10vh] dark:text-white border-b-1 dark:border-slate-800 border-slate-400/50 flex items-center justify-between px-20">
       <div className="flex gap-5 items-center justify-between w-full">
         <div className="flex gap-3 items-center justify-center">
           {selectedChatType == "contact" ? (
@@ -21,7 +21,7 @@ const ChatHeader = () => {
                 />
               ) : (
                 <div
-                  className={`uppercase text-lg flex items-center justify-center h-12 w-12 ${getColor(
+                  className={`uppercase text-lg text-neutral-300 flex items-center justify-center h-12 w-12 ${getColor(
                     selectedChatData.color
                   )}`}
                 >
@@ -36,7 +36,7 @@ const ChatHeader = () => {
               #
             </div>
           )}
-          <div className="text-white">
+          <div className="dark:text-white">
             {selectedChatType == "group" && selectedChatData.name}
             {selectedChatType == "contact" && selectedChatData.fullName
               ? selectedChatData.fullName
@@ -44,7 +44,7 @@ const ChatHeader = () => {
           </div>
         </div>
         <div className="flex items-center justify-center gap-5">
-          <button className="text-neutral-500 hover:text-white focus:outline-none focus:ring-0 duration-300 transition-all cursor-pointer">
+          <button className="dark:text-neutral-500 dark:hover:text-white text-neutral-400 hover:text-neutral-600 focus:outline-none focus:ring-0 duration-300 transition-all cursor-pointer">
             <X className="text-3xl" onClick={closeChat} />
           </button>
         </div>
