@@ -13,7 +13,7 @@ import path from "path";
 dotenv.config();
 const app = express();
 const Port = process.env.PORT || 5000; // Add fallback port
-const _dirname = path.resolve();
+const __dirname = path.resolve();
 
 // Middleware
 app.use(express.json({ limit: '20mb' }));
