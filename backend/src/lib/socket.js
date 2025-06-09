@@ -3,13 +3,16 @@ import Message from "../models/message.model.js";
 import Group from "../models/group.model.js";
 
 export const initializeSocket = (server) => {
-  const io = new SockeIOServer(server, {
-    cors: {
-      origin: process.env.FRONTEND_URL,
-      methods: ["GET", "POST"],
-      credentials: true,
-    },
-  });
+ const io = new SockeIOServer(server, {
+  cors: {
+    origin: [
+      "https://chat-app-tk44.vercel.app",
+      "http://localhost:3000"
+    ],
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
   const userSocketMap = new Map();
 
   const disconnect = (socket) => {

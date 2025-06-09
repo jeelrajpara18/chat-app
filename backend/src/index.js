@@ -23,9 +23,10 @@ app.use(cookieParser());
 
 // CORS - consider if you really need this if Socket.IO handles it
 app.use(cors({
-  origin: process.env.NODE_ENV === "production" 
-    ? "https://chat-app-tk44.vercel.app" 
-    : ["http://localhost:3000", "https://chat-app-tk44.vercel.app"],
+  origin: [
+    "https://chat-app-tk44.vercel.app",
+    "http://localhost:3000" // for local development
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
