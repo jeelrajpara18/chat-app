@@ -22,10 +22,22 @@ app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 app.use(cookieParser());
 
 // CORS - consider if you really need this if Socket.IO handles it
-app.use(cors({
-  origin: "https://chat-app-tk44.vercel.app",
-  credentials: true
-}));
+const allowedOrigins = [
+  "http://localhost:5173", // Vite dev
+  "https://chat-app-tk44.vercel.app", // Your deployed frontend
+];
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
+app.options("*", cors());
 
 // Serve uploaded images statically (correct path)
 app.use("/uploads/profilePic", express.static("uploads/profilePic"));
