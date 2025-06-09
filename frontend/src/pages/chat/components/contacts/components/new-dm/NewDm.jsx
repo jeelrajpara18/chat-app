@@ -30,7 +30,7 @@ const NewDm = () => {
   const searchContacts = async (searchTerm) => {
     try {
       if (searchTerm.length > 0) {
-        const res = await axiosInstance.post(SEARCH_CONTACTS, { searchTerm });
+        const res = await axiosInstance.post(SEARCH_CONTACTS, { searchTerm } );
         if (res.status == 200 && res.data.contacts) {
           setSearchedContacts(res.data.contacts);
         }

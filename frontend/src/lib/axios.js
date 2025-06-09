@@ -8,4 +8,8 @@ export const axiosInstance = axios.create({
       ? "http://localhost:5001/api"
       : `${productionBaseURL}/api`, // Correct backend URL in production
   withCredentials: true,
+  headers : {
+    "Content-Type" : "application/json",
+    "Accept" : "application/json"
+  }
 });
