@@ -1,7 +1,7 @@
 import express from "express";
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
-import groupRoutes from "./routes/groups.routes.js"
+import groupRoutes from "./routes/groups.routes.js";
 import dotenv from "dotenv";
 import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
@@ -16,24 +16,19 @@ const Port = process.env.PORT || 5000; // Add fallback port
 const __dirname = path.resolve();
 
 // Middleware
-app.use(express.json({ limit: '20mb' }));
-app.use(express.urlencoded({ extended: true, limit: '20mb' }));
+app.use(express.json({ limit: "20mb" }));
+app.use(express.urlencoded({ extended: true, limit: "20mb" }));
 // app.use(express.json())
 app.use(cookieParser());
 
 // CORS - consider if you really need this if Socket.IO handles it
-const allowedOrigins = [
-  "http://localhost:5173", // Vite dev
-  "https://chat-app-tk44.vercel.app", // Your deployed frontend
-];
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error("Not allowed by CORS"));
-    },
+    origin: [
+      "http://localhost:3000",
+      "https://chat-app-tk44.vercel.app",
+      "http://chat-app-tk44.vercel.app",
+    ],
     credentials: true,
   })
 );
@@ -47,10 +42,10 @@ app.use("/uploads/files", express.static("uploads/files"));
 app.use("/api/auth", authRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/messages", messageRoutes);
-app.use("/api/groups" , groupRoutes)
+app.use("/api/groups", groupRoutes);
 
-if(process.env.NODE_ENV === "production"){
-  app.use(express.static(path.join(__dirname , "../frontend/dist")))
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
