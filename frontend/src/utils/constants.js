@@ -9,15 +9,15 @@ export const UPDATE_USER_PROFILE = `${AUTH_ROUTES}/update-profile`
 export const ADD_PROFILE_IMAGE = `${AUTH_ROUTES}/add-profile-image`
 export const DELETE_PROFILE_IMAGE = `${AUTH_ROUTES}/remove-profile-image`
 
-export const CONTACT_ROUTES = "api/contacts";
+export const CONTACT_ROUTES = "contacts";
 export const SEARCH_CONTACTS = `${CONTACT_ROUTES}/search-contact`;
 export const GET_DM_LIST = `${CONTACT_ROUTES}/get-contacts`
 export const GET_ALL_CONTACT = `${CONTACT_ROUTES}/get-all-contacts`
 
-export const MESSAGE_ROUTES = "api/messages";
+export const MESSAGE_ROUTES = "messages";
 export const GET_ALL_MESSAGE = `${MESSAGE_ROUTES}/get-messages`
 export const UPLOAD_FILES = `${MESSAGE_ROUTES}/upload-file`
 
-export const GROUP_ROUTES = "api/groups";
+export const GROUP_ROUTES = "groups";
 export const CREATE_GROUP = `${GROUP_ROUTES}/create-group`;
 export const GET_GROUP = `${GROUP_ROUTES}/get-group-users`
