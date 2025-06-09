@@ -2,14 +2,35 @@ import axios from "axios";
 
 const productionBaseURL = import.meta.env.VITE_SERVER_URL; // Set this in your .env file
 
-export const axiosInstance = axios.create({
-  baseURL:
-    import.meta.env.MODE === "development"
-      ? "http://localhost:5001/api"
-      : `${productionBaseURL}/api`, // Correct backend URL in production
+// axiosInstance.js
+const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_SERVER_URL,
   withCredentials: true,
-  headers : {
-    "Content-Type" : "application/json",
-    "Accept" : "application/json"
-  }
 });
+
+// Request interceptor
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token') || getCookie('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Response interceptor
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      handleUnauthorized();
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Helper function to get cookies
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
