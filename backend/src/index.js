@@ -1,7 +1,7 @@
 import express from "express";
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
-import groupRoutes from "./routes/groups.routes.js";
+import groupRoutes from "./routes/groups.routes.js"
 import dotenv from "dotenv";
 import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
@@ -16,23 +16,20 @@ const Port = process.env.PORT || 5000; // Add fallback port
 const __dirname = path.resolve();
 
 // Middleware
-app.use(express.json({ limit: "20mb" }));
-app.use(express.urlencoded({ extended: true, limit: "20mb" }));
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 // app.use(express.json())
 app.use(cookieParser());
 
 // CORS - consider if you really need this if Socket.IO handles it
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://chat-app-tk44.vercel.app",
-      "http://chat-app-tk44.vercel.app",
-    ],
-    credentials: true,
-  })
-);
-app.options("*", cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === "production" 
+    ? "https://chat-app-tk44.vercel.app" 
+    : ["http://localhost:3000", "https://chat-app-tk44.vercel.app"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}));
 
 // Serve uploaded images statically (correct path)
 app.use("/uploads/profilePic", express.static("uploads/profilePic"));
@@ -42,10 +39,10 @@ app.use("/uploads/files", express.static("uploads/files"));
 app.use("/api/auth", authRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/messages", messageRoutes);
-app.use("/api/groups", groupRoutes);
+app.use("/api/groups" , groupRoutes)
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+if(process.env.NODE_ENV === "production"){
+  app.use(express.static(path.join(__dirname , "../frontend/dist")))
 
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
