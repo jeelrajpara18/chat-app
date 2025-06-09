@@ -3,7 +3,7 @@ import axios from "axios";
 const productionBaseURL = import.meta.env.VITE_SERVER_URL; // Set this in your .env file
 
 // axiosInstance.js
-const axiosInstance = axios.create({
+export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,
   withCredentials: true,
 });
