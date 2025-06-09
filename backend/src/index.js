@@ -23,7 +23,7 @@ app.use(cookieParser());
 
 // CORS - consider if you really need this if Socket.IO handles it
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: "https://chat-app-tk44.vercel.app",
   credentials: true
 }));
 
